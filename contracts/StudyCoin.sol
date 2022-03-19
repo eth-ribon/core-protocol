@@ -9,47 +9,32 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract Attendance is ERC721URIStorage {
+contract StudyCoin is ERC20 {
     using SafeERC20 for IERC20;
     IERC20 public donationToken;
-
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-    uint lastTransferedId;
+    uint public dailyAmount;
 
     constructor(
         address _donationToken
-    ) public ERC721("Attendance", "ATC") {
+    ) ERC20("StudyCoin", "STC") {
         donationToken = IERC20(_donationToken);
+        dailyAmount = 5;
     }
 
-    function confirmAttendance(string memory tokenURI)
+    function confirmAttendance(address[] memory _attendants)
         public
-        returns (uint256)
     {
-        _tokenIds.increment();
-
-        uint256 newAttendanceId = _tokenIds.current();
-        _mint(address(this), newAttendanceId);
-        _setTokenURI(newAttendanceId, tokenURI);
-
-        return newAttendanceId;
+        require(_attendants.length * dailyAmount <= donationToken.balanceOf(address(this)),
+            "Balance is not enough");
+        for (uint256 index = 0; index < _attendants.length; index++) {
+            donationToken.safeTransfer(_attendants[index], dailyAmount);
+        }
     }
 
     function addDonationPoolBalance(uint256 _amount) public {
         require(_amount > 0, "Amount should be bigger than 0");
 
         donationToken.safeTransferFrom(msg.sender, address(this), _amount);
-    }
-
-    function merge() public {
-        Sponsor percentage
-        NFT BalanceOf
-        Transfer NFT (loop FROM lastTransferedId to _tokenIds.current)
-            _tokenIds.current
-            - lastTransferedId
-            - Send the money to the responsible (NFT ID)
-            - Send the NFT to the sponsor (NFT ID)
-            - updatedlastTransferedId
+        _mint(msg.sender, _amount);
     }
 }
