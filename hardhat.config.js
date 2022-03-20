@@ -30,7 +30,7 @@ module.exports = {
     },
     harmony: {
       url: `https://api.s0.b.hmny.io`,
-      accounts: [`0x${process.env.HARMONY_PRIVATE_KEY}`],
+      accounts: [process.env.HARMONY_PRIVATE_KEY],
     },
   },
   gasReporter: {
