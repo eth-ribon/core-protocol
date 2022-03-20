@@ -18,19 +18,33 @@ contract Educa is ERC20, AccessControl {
     using SafeERC20 for IERC20;
     IERC20 public donationToken;
     Attendance public attendance;
+    address public organizationCouncil;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     Counters.Counter private _lastTokenClaimed;
 
     uint public dailyAmount;
+    mapping(address => bool) public organizations;
 
     constructor(
-        address _donationToken
+        address _donationToken,
+        address _organizationCouncil
     ) ERC20("Educa", "EDC") {
         donationToken = IERC20(_donationToken);
+        organizationCouncil = _organizationCouncil;
         attendance = new Attendance();
         dailyAmount = 5;
+    }
+
+    function addOrganizationToCouncil(address _organization) public {
+        require(msg.sender == organizationCouncil, "You are not on organization council.");
+        organizations[_organization] = true;
+    }
+
+    function removeOrganizationFromCouncil(address _organization) public {
+        require(msg.sender == organizationCouncil, "You are not on organization council.");
+        organizations[_organization] = false;
     }
 
     function addDonationPoolBalance(uint256 _amount) public {
@@ -40,9 +54,8 @@ contract Educa is ERC20, AccessControl {
         _mint(msg.sender, _amount);
     }
 
-    function confirmAttendance(address _student, string memory tokenURI)
-        public
-    {
+    function confirmAttendance(address _student, string memory tokenURI) public {
+        require(msg.sender == organizationCouncil, "You are not on the organization council.");
         attendance.mintAttendance(tokenURI);
         donationToken.safeTransfer(_student, dailyAmount);
     }
@@ -51,5 +64,9 @@ contract Educa is ERC20, AccessControl {
         _burn(msg.sender, 1);
         _lastTokenClaimed.increment();
         attendance.safeTransferFrom(address(this),msg.sender, _lastTokenClaimed.current());
+    }
+
+    function isOrganizationOnCouncil(address _organization) public view returns (bool) {
+        return organizations[_organization];
     }
 }
