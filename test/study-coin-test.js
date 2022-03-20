@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { BigNumber } = require("ethers");
 
 describe("Educa", () => {
   describe("When run parameters correctly", () => {
@@ -84,8 +85,8 @@ describe("Educa", () => {
 
     describe("Confirm Attendance", () => {
       beforeEach(async () => {
-        await donationToken.approve(educa.address, 10);
-        await educa.addDonationPoolBalance(10);
+        await donationToken.approve(educa.address, BigNumber.from('1000000000000000000'));
+        await educa.addDonationPoolBalance(BigNumber.from('1000000000000000000'));
         await educa.confirmAttendance(
           "0xC02F65D7B10700Df84308D35709e7fb6f2267DFD",
           JSON.stringify(
@@ -117,8 +118,8 @@ describe("Educa", () => {
 
     describe("Burn Token", () => {
       beforeEach(async () => {
-        await donationToken.approve(educa.address, 10);
-        await educa.addDonationPoolBalance(10);
+        await donationToken.approve(educa.address, BigNumber.from('1000000000000000000'));
+        await educa.addDonationPoolBalance( BigNumber.from('1000000000000000000'));
         await educa.confirmAttendance(
           "0xC02F65D7B10700Df84308D35709e7fb6f2267DFD",
           JSON.stringify(

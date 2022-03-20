@@ -34,7 +34,7 @@ contract Educa is ERC20, AccessControl {
         donationToken = IERC20(_donationToken);
         organizationCouncil = _organizationCouncil;
         attendance = new Attendance();
-        dailyAmount = 5;
+        dailyAmount = 0.01 ether;
     }
 
     function addOrganizationToCouncil(address _organization) public {
