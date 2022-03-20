@@ -3,28 +3,33 @@ pragma solidity ^0.8.11;
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract StudyCoin is ERC1155 {
+import "./Attendance.sol";
+
+contract Educa is ERC20, AccessControl {
     using SafeERC20 for IERC20;
     IERC20 public donationToken;
+    Attendance public attendance;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     Counters.Counter private _lastTokenClaimed;
 
-    uint256 public constant STUDY_COIN = 0;
     uint public dailyAmount;
 
     constructor(
         address _donationToken
-    ) ERC1155("") {
+    ) ERC20("Educa", "EDC") {
         donationToken = IERC20(_donationToken);
+        attendance = new Attendance();
         dailyAmount = 5;
     }
 
@@ -32,20 +37,19 @@ contract StudyCoin is ERC1155 {
         require(_amount > 0, "Amount should be bigger than 0");
 
         donationToken.safeTransferFrom(msg.sender, address(this), _amount);
-        _mint(msg.sender, STUDY_COIN, _amount, "");
+        _mint(msg.sender, _amount);
     }
 
-    function confirmAttendance(address _student, bytes memory tokenURI)
+    function confirmAttendance(address _student, string memory tokenURI)
         public
     {
-        _tokenIds.increment();
-        _mint(address(this), _tokenIds.current(), 1, tokenURI);
+        attendance.mintAttendance(tokenURI);
         donationToken.safeTransfer(_student, dailyAmount);
     }
 
-    function claimNFT() public {
-        _burn(msg.sender, STUDY_COIN, 1);
+    function claimAttendance() public {
+        _burn(msg.sender, 1);
         _lastTokenClaimed.increment();
-        safeTransferFrom(address(this),msg.sender, _lastTokenClaimed.current(), 1, "");
+        attendance.safeTransferFrom(address(this),msg.sender, _lastTokenClaimed.current());
     }
 }

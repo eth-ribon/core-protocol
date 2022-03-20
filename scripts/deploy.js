@@ -16,12 +16,12 @@ async function main() {
   // We get the contract to deploy
   const CELO_DOLAR_ADDRESS = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
   
-  const StudyCoin = await hre.ethers.getContractFactory("StudyCoin");
-  const studyCoin = await StudyCoin.deploy(CELO_DOLAR_ADDRESS);
+  const Educa = await hre.ethers.getContractFactory("Educa");
+  const educa = await Educa.deploy(CELO_DOLAR_ADDRESS);
 
-  await studyCoin.deployed();
+  await educa.deployed();
 
-  console.log("StudyCoin deployed to:", studyCoin.address);
+  console.log("Educa deployed to:", educa.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
