@@ -27,7 +27,11 @@ module.exports = {
     alfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [process.env.PRIVATE_KEY || ""],
-    }
+    },
+    harmony: {
+      url: `https://api.s0.b.hmny.io`,
+      accounts: [`0x${process.env.HARMONY_PRIVATE_KEY}`],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
